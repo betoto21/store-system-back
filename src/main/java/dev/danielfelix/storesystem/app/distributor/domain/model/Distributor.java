@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class Distributor {
     private int idSupplier;
     private String name;
+    private int totalPages;
 }

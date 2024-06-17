@@ -13,11 +13,12 @@ public class DistributorMapper {
     private static String idDistributor = "id_distributor";
     private static String nameSupplier = "name";
 
-    public Distributor apply(ResultSet rs) throws SQLException {
+    public Distributor apply(ResultSet rs, int totalPages) throws SQLException {
         try {
             return Distributor.builder()
                     .idSupplier(rs.getInt(idDistributor))
                     .name(rs.getString(nameSupplier))
+                    .totalPages(totalPages)
                     .build();
         } catch (SQLException e) {
             throw new SQLException("Error on retrieving suppliers: ", e);
