@@ -13,4 +13,6 @@ public class Category {
 
     private int idCategory;
     private String name;
+    // pagination showing total items
+    private int totalPages;
 }

@@ -14,12 +14,13 @@ public class CategoryMapper {
     private final String ID_CATEGORY = "id_category";
     private final String NAME_CATEGORY = "name";
 
-    public Category apply(ResultSet rs) throws SQLException {
+    public Category apply(ResultSet rs, int countCategories) throws SQLException {
         LOGGER.debug("Äpplying Category");
         try{
             return Category.builder()
                     .idCategory(rs.getInt(ID_CATEGORY))
                     .name(rs.getString(NAME_CATEGORY))
+                    .totalPages(countCategories)
                     .build();
         } catch (SQLException e){
             throw new SQLException("Error on retrieving Category", e);
