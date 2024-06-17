@@ -26,6 +26,7 @@ public class DistributorRepository {
         LOGGER.info("Invoking getAllCategories");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_GET)) {
             LOGGER.debug("Running Query {}", ps);
+            distributors.clear();
             try (final ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     distributors.add(mapper.apply(rs));
