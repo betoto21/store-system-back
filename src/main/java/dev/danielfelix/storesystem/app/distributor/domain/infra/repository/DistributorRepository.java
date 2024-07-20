@@ -18,7 +18,8 @@ import java.util.List;
 public class DistributorRepository {
 
     private static final Logger LOGGER = LogManager.getLogger(DistributorRepository.class);
-    public static final String QUERY_GET = "select id_distributor, \"name\"  from products_distributors pd";
+    private static final String QUERY_GET = "select id_distributor, \"name\"  from products_distributors pd";
+    private static final String QUERY_INSERT = "insert into products_distributors (\"name\") values (?)";
     private static final String GET_COUNT_DISTRIBUTORS = "select count(*) from products_distributors pd";
     private static List<Distributor> distributors = new ArrayList<>();
     private static DistributorMapper mapper = new DistributorMapper();
@@ -40,6 +41,33 @@ public class DistributorRepository {
             return distributors;
         } catch (SQLException e){
             throw new DatabaseException("Error on retrieving suppliers: ",e);
+        }
+    }
+
+    public static Distributor insertSupplier(Connection con, String distributor){
+        LOGGER.info("Invoking insertSupplier");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_INSERT)){
+            LOGGER.debug("Running Query {}", ps);
+            con.setAutoCommit(false);
+            ps.setString(1, distributor);
+            ps.executeUpdate();
+            LOGGER.info("Supplier {} inserted, commiting changes", distributor);
+            con.commit();
+            return Distributor.builder().name(distributor).build();
+        } catch (SQLException e){
+            try {
+                LOGGER.error("performing rollback");
+                con.rollback();
+            } catch (SQLException ex) {
+                throw new DatabaseException("Error on rollback: ",ex);
+            }
+            throw new DatabaseException("Error on inserting supplier: ",e);
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new DatabaseException("Error on setAutoCommit true: ",e);
+            }
         }
     }
 

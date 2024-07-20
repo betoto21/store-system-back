@@ -2,6 +2,7 @@ package dev.danielfelix.storesystem.app.distributor;
 
 import dev.danielfelix.storesystem.app.distributor.domain.model.Distributor;
 import dev.danielfelix.storesystem.app.distributor.usecase.GetDistributorUseCase;
+import dev.danielfelix.storesystem.app.distributor.usecase.PostDistributorUseCase;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
 import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,26 @@ public class DistributorController {
             LOGGER.error("Error on request getSuppliers {}", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<Void> insertSupplier(@RequestBody Distributor distributor){
+        try {
+            LOGGER.info("procesing request insertSupplier");
+            if (isNullOrEmpty(distributor.getName())) {
+                LOGGER.info("the name is null or empty");
+                return ResponseEntity.badRequest().build();
+            }
+            PostDistributorUseCase.dispatch(distributor);
+            return ResponseEntity.ok().build();
+        } catch (TechnicalErrorException e){
+            LOGGER.error("Error on request insertSupplier {}", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 
 }
