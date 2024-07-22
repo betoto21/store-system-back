@@ -21,13 +21,15 @@ public class DistributorRepository {
     private static final String QUERY_GET = "select id_distributor, \"name\"  from products_distributors pd";
     private static final String QUERY_INSERT = "insert into products_distributors (\"name\") values (?)";
     private static final String GET_COUNT_DISTRIBUTORS = "select count(*) from products_distributors pd";
+    private static final String QUERY_GET_BY_ID = "select id_distributor, \"name\"  from products_distributors pd where id_distributor = ?";
+    private static final String QUERY_UPDATE = "update products_distributors set \"name\" = ? where id_distributor = ?";
     private static List<Distributor> distributors = new ArrayList<>();
     private static DistributorMapper mapper = new DistributorMapper();
     private static int countCategories = 0;
     private DistributorRepository(){}
 
-    public static List<Distributor> getSuppliers(Connection con, int page, String sort){
-        LOGGER.info("Invoking getAllCategories");
+    public static List<Distributor> getAllDistributor(Connection con, int page, String sort){
+        LOGGER.info("Invoking getAllDistributor");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_GET.concat(PaginationHelper.getPaginationQuery(page, sort)))){
             LOGGER.debug("Running Query {}", ps);
             distributors.clear();
@@ -40,18 +42,18 @@ public class DistributorRepository {
             }
             return distributors;
         } catch (SQLException e){
-            throw new DatabaseException("Error on retrieving suppliers: ",e);
+            throw new DatabaseException("Error on retrieving Distributor: ",e);
         }
     }
 
-    public static Distributor insertSupplier(Connection con, String distributor){
-        LOGGER.info("Invoking insertSupplier");
+    public static Distributor insertDistributor(Connection con, String distributor){
+        LOGGER.info("Invoking insertDistributor");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_INSERT)){
             LOGGER.debug("Running Query {}", ps);
             con.setAutoCommit(false);
             ps.setString(1, distributor);
             ps.executeUpdate();
-            LOGGER.info("Supplier {} inserted, commiting changes", distributor);
+            LOGGER.info("Distributor {} inserted, commiting changes", distributor);
             con.commit();
             return Distributor.builder().name(distributor).build();
         } catch (SQLException e){
@@ -61,7 +63,51 @@ public class DistributorRepository {
             } catch (SQLException ex) {
                 throw new DatabaseException("Error on rollback: ",ex);
             }
-            throw new DatabaseException("Error on inserting supplier: ",e);
+            throw new DatabaseException("Error on inserting Distributor: ",e);
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new DatabaseException("Error on setAutoCommit true: ",e);
+            }
+        }
+    }
+
+    public static Distributor getDistributorById(Connection con, int id){
+        LOGGER.info("Invoking getDistributorById");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_GET_BY_ID)){
+            LOGGER.debug("Running Query {}", ps);
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery();) {
+                if (rs.next()) {
+                    return mapper.apply(rs, 1);
+                }
+            }
+            return null;
+        } catch (SQLException e){
+            throw new DatabaseException("Error on retrieving Distributor by id: ",e);
+        }
+    }
+
+    public static Distributor updateDistributor(Connection con, Distributor distributor){
+        LOGGER.info("Invoking updateSupplier");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_UPDATE)){
+            LOGGER.debug("Running Query {}", ps);
+            con.setAutoCommit(false);
+            ps.setString(1, distributor.getName());
+            ps.setInt(2, distributor.getIdDistributor());
+            ps.executeUpdate();
+            LOGGER.info("Distributor {} updated, commiting changes", distributor.getName());
+            con.commit();
+            return distributor;
+        } catch (SQLException e){
+            try {
+                LOGGER.error("performing rollback");
+                con.rollback();
+            } catch (SQLException ex) {
+                throw new DatabaseException("Error on rollback: ",ex);
+            }
+            throw new DatabaseException("Error on updating Distributor: ",e);
         } finally {
             try {
                 con.setAutoCommit(true);
@@ -81,7 +127,7 @@ public class DistributorRepository {
                 }
             }
         } catch (SQLException e){
-            throw new DatabaseException("Error on counting categories: ",e);
+            throw new DatabaseException("Error on counting Distributor: ",e);
         }
     }
 }

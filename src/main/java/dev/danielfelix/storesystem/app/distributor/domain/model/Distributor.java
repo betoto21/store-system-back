@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class Distributor {
-    private int idSupplier;
+    private int idDistributor;
     private String name;
     private int totalPages;
 }

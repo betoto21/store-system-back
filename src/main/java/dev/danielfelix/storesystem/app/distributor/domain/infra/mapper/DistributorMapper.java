@@ -11,17 +11,17 @@ public class DistributorMapper {
 
     private static final Logger LOGGER = LogManager.getLogger(DistributorMapper.class);
     private static String idDistributor = "id_distributor";
-    private static String nameSupplier = "name";
+    private static String nameDistributor = "name";
 
     public Distributor apply(ResultSet rs, int totalPages) throws SQLException {
         try {
             return Distributor.builder()
-                    .idSupplier(rs.getInt(idDistributor))
-                    .name(rs.getString(nameSupplier))
+                    .idDistributor(rs.getInt(idDistributor))
+                    .name(rs.getString(nameDistributor))
                     .totalPages(totalPages)
                     .build();
         } catch (SQLException e) {
-            throw new SQLException("Error on retrieving suppliers: ", e);
+            throw new SQLException("Error on retrieving Distributor: ", e);
         }
     }
 }

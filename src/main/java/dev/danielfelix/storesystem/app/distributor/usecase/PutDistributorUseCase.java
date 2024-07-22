@@ -4,29 +4,25 @@ import dev.danielfelix.storesystem.app.distributor.domain.infra.repository.Distr
 import dev.danielfelix.storesystem.app.distributor.domain.model.Distributor;
 import dev.danielfelix.storesystem.libraries.exceptions.DatabaseException;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
-import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
-import dev.danielfelix.storesystem.libraries.persistence.db.PostgreSQLConnection;
 import dev.danielfelix.storesystem.libraries.persistence.db.ConnectionsHolder;
+import dev.danielfelix.storesystem.libraries.persistence.db.PostgreSQLConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.util.List;
 
+public class PutDistributorUseCase {
 
-public class GetDistributorUseCase {
+    private static final Logger LOGGER = LogManager.getLogger(PutDistributorUseCase.class);
+    private PutDistributorUseCase(){}
 
-    private static final Logger LOGGER = LogManager.getLogger(GetDistributorUseCase.class);
-    private static final String sort = "id_distributor";
-    private GetDistributorUseCase(){}
-
-    public static List<Distributor> dispatch(RequestPage pr){
+    public static Distributor dispatch(Distributor distributor){
         LOGGER.info("invoking dispatch");
         try {
             final Connection con = ConnectionsHolder.getConnection(
                     PostgreSQLConnection.ENVARPREFIX,
                     PostgreSQLConnection::getConnection);
-            return DistributorRepository.getAllDistributor(con, pr.getPage(), sort);
+            return DistributorRepository.updateDistributor(con, distributor);
         } catch (DatabaseException e){
             throw new TechnicalErrorException("Error on retrieving Distributor",e);
         }

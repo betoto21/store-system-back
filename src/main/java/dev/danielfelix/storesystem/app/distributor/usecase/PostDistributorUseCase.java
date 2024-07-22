@@ -14,18 +14,17 @@ import java.sql.Connection;
 public class PostDistributorUseCase {
 
     private static final Logger LOGGER = LogManager.getLogger(PostDistributorUseCase.class);
-    private static final String sort = "id_distributor";
     private PostDistributorUseCase(){}
 
-    public static void dispatch(Distributor distributor){
+    public static Distributor dispatch(Distributor distributor){
         LOGGER.info("invoking dispatch");
         try {
             final Connection con = ConnectionsHolder.getConnection(
                     PostgreSQLConnection.ENVARPREFIX,
                     PostgreSQLConnection::getConnection);
-            DistributorRepository.insertSupplier(con, distributor.getName());
+            return DistributorRepository.insertDistributor(con, distributor.getName());
         } catch (DatabaseException e){
-            throw new TechnicalErrorException("Error on retrieving suppliers",e);
+            throw new TechnicalErrorException("Error on retrieving Distributor",e);
         }
     }
 }
