@@ -10,9 +10,9 @@ import java.sql.SQLException;
 
 public class CategoryMapper {
 
-    private Logger LOGGER = LoggerFactory.getLogger(CategoryMapper.class);
-    private final String ID_CATEGORY = "id_category";
-    private final String NAME_CATEGORY = "name";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryMapper.class);
+    private static final String ID_CATEGORY = "id_category";
+    private static final String NAME_CATEGORY = "name";
 
     public Category apply(ResultSet rs, int countCategories) throws SQLException {
         LOGGER.debug("Äpplying Category");

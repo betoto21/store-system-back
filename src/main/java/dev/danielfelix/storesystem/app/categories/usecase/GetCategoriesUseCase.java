@@ -17,7 +17,7 @@ public class GetCategoriesUseCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetCategoriesUseCase.class);
     private static final String ID_CATEGORY = "id_category";
-    private static final String NAME_CATEGORY = "name";
+    private GetCategoriesUseCase(){}
 
     public static List<Category> dispatch(RequestPage rp){
         LOGGER.info("Invoking getAllCategories");

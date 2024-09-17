@@ -37,7 +37,7 @@ public class DistributorController {
             }
             return ResponseEntity.ok(distributors);
         } catch (TechnicalErrorException e){
-            LOGGER.error("Error on request getDistributor {}", e);
+            LOGGER.error("Error on request getDistributor: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -53,7 +53,7 @@ public class DistributorController {
             PostDistributorUseCase.dispatch(distributor);
             return ResponseEntity.ok().build();
         } catch (TechnicalErrorException e){
-            LOGGER.error("Error on request insertDistributor {}", e);
+            LOGGER.error("Error on request insertDistributor: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -69,7 +69,7 @@ public class DistributorController {
             Distributor distributorResponse = PutDistributorUseCase.dispatch(distributor);
             return ResponseEntity.ok(distributorResponse);
         } catch (TechnicalErrorException e){
-            LOGGER.error("Error on request updateDistributor {}", e);
+            LOGGER.error("Error on request updateDistributor: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -88,7 +88,7 @@ public class DistributorController {
             }
             return ResponseEntity.ok(distributor);
         } catch (TechnicalErrorException e){
-            LOGGER.error("Error on request getDistributorById {}", e);
+            LOGGER.error("Error on request getDistributorById: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }

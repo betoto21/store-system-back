@@ -35,7 +35,7 @@ public class CategoryController {
             }
             return ResponseEntity.ok(categories);
         } catch (TechnicalErrorException e){
-            LOGGER.error("Error on request getCategories {}", e);
+            LOGGER.error("Error on request getCategories: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }

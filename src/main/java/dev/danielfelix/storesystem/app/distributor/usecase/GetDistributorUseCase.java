@@ -17,7 +17,7 @@ import java.util.List;
 public class GetDistributorUseCase {
 
     private static final Logger LOGGER = LogManager.getLogger(GetDistributorUseCase.class);
-    private static final String sort = "id_distributor";
+    private static final String SORT = "id_distributor";
     private GetDistributorUseCase(){}
 
     public static List<Distributor> dispatch(RequestPage pr){
@@ -26,7 +26,7 @@ public class GetDistributorUseCase {
             final Connection con = ConnectionsHolder.getConnection(
                     PostgreSQLConnection.ENVARPREFIX,
                     PostgreSQLConnection::getConnection);
-            return DistributorRepository.getAllDistributor(con, pr.getPage(), sort);
+            return DistributorRepository.getAllDistributor(con, pr.getPage(), SORT);
         } catch (DatabaseException e){
             throw new TechnicalErrorException("Error on retrieving Distributor",e);
         }

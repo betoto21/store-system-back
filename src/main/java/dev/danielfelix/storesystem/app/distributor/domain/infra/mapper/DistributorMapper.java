@@ -15,6 +15,7 @@ public class DistributorMapper {
 
     public Distributor apply(ResultSet rs, int totalPages) throws SQLException {
         try {
+            LOGGER.debug("Äpplying Category");
             return Distributor.builder()
                     .idDistributor(rs.getInt(idDistributor))
                     .name(rs.getString(nameDistributor))
