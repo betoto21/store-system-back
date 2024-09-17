@@ -20,6 +20,7 @@ public class CategoryRepository {
     private static final String QUERY_GET_ALL_CATEGORIES = "select id_category, name  from products_categories pc ORDER BY ? LIMIT 10 OFFSET ?";
     private static final String QUERY_GET_COUNT_CATEGORIES = "select count(*) from products_categories pc";
     private static final String QUERY_GET_CATEGORY_BY_ID = "select id_category, name from products_categories pc where id_category = ?";
+    private static final String QUERY_SAVE_CATEGORY = "insert into products_categories (name) values (?)";
     private static List<Category> categories = new ArrayList<>();
     private static CategoryMapper mapper = new CategoryMapper();
     private static int countCategories = 0;
@@ -61,6 +62,28 @@ public class CategoryRepository {
             throw new DatabaseException("Error on retrieving category: ",e);
         }
         return null;
+    }
+
+    public static Category insertCategory(Connection con, String category){
+        LOGGER.info("Invoking insertCategory");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_SAVE_CATEGORY)){
+            LOGGER.debug(debugQuery, ps);
+            con.setAutoCommit(false);
+            ps.setString(1, category);
+            ps.executeUpdate();
+            LOGGER.info("Category {} inserted, commiting changes", category);
+            con.commit();
+            con.setAutoCommit(true);
+            return Category.builder().name(category).build();
+        } catch (SQLException e){
+            try {
+                LOGGER.error("performing rollback");
+                con.rollback();
+            } catch (SQLException ex) {
+                throw new DatabaseException("Error on rollback: ",ex);
+            }
+            throw new DatabaseException("Error on inserting category: ",e);
+        }
     }
 
     private static void getCountCategories(Connection con){
