@@ -6,6 +6,7 @@ import dev.danielfelix.storesystem.app.categories.domain.models.Category;
 import dev.danielfelix.storesystem.app.categories.usecase.GetCategoriesUseCase;
 import dev.danielfelix.storesystem.app.categories.usecase.GetCategoryByIdUseCase;
 import dev.danielfelix.storesystem.app.categories.usecase.PostCategoryUseCase;
+import dev.danielfelix.storesystem.app.categories.usecase.PutCategoryUseCase;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
 import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
 import org.apache.logging.log4j.LogManager;
@@ -68,6 +69,22 @@ public class CategoryController {
             return ResponseEntity.ok().build();
         } catch (TechnicalErrorException e){
             LOGGER.error("Error on request insertCategory: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<Category> updateCategory(@RequestBody Category category){
+        try {
+            LOGGER.info("procesing request updateCategory");
+            if (category.getName() == null || category.getName().isEmpty() || category.getIdCategory() == 0) {
+                LOGGER.info("the name or idCategory is null or empty");
+                return ResponseEntity.badRequest().build();
+            }
+            Category categoryResponse = PutCategoryUseCase.dispatch(category);
+            return ResponseEntity.ok(categoryResponse);
+        } catch (TechnicalErrorException e){
+            LOGGER.error("Error on request updateCategory: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
