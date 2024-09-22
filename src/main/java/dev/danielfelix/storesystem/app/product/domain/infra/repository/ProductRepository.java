@@ -18,15 +18,17 @@ public class ProductRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductRepository.class);
     private static final String QUERY_GET_ALL_PRODUCTS = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p  ORDER BY ? LIMIT 10 OFFSET ?";
+    private static final String QUERY_GET_PRODUCT_BY_ID = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p WHERE id_product = ?";
     private static final String QUERY_GET_COUNT_PRODUCT = "SELECT count(*) FROM products p";
     private static final List<Product> products = new ArrayList<>();
     private static final ProductMapper mapper = new ProductMapper();
+    private static final String DEBUG_QUERY = "Running Query {}";
     private ProductRepository(){}
 
     public static List<Product> getAllProducts(Connection con, int page, String sort){
         LOGGER.info("Invoking getAllProducts");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_GET_ALL_PRODUCTS)){
-            LOGGER.debug("Running Query {}", ps);
+            LOGGER.debug(DEBUG_QUERY, ps);
             products.clear();
             int countProducts = getCountProducts(con);
             int pages = PaginationHelper.totalPage(countProducts);
@@ -44,10 +46,26 @@ public class ProductRepository {
         }
     }
 
+    public static Product getProductById(Connection con, int id){
+        LOGGER.info("Invoking getProductById");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_GET_PRODUCT_BY_ID)){
+            LOGGER.debug(DEBUG_QUERY, ps);
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery();) {
+                if (rs.next()) {
+                    return mapper.apply(rs, 1);
+                }
+                return null;
+            }
+        } catch (SQLException e){
+            throw new DatabaseException("Error on retrieving product by id: ",e);
+        }
+    }
+
     private static int getCountProducts(Connection con){
         LOGGER.info("Invoking countProducts");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_GET_COUNT_PRODUCT)){
-            LOGGER.debug("Running Query {}", ps);
+            LOGGER.debug(DEBUG_QUERY, ps);
             try(ResultSet rs = ps.executeQuery();) {
                 if (rs.next()) {
                     return rs.getInt(1);
