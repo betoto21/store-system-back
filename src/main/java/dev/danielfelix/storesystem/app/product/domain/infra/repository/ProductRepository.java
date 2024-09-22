@@ -19,6 +19,7 @@ public class ProductRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductRepository.class);
     private static final String QUERY_GET_ALL_PRODUCTS = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p  ORDER BY ? LIMIT 10 OFFSET ?";
     private static final String QUERY_GET_PRODUCT_BY_ID = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p WHERE barcode = ?";
+    private static final String QUERY_INSERT_PRODUCT = "INSERT INTO products (\"name\", barcode, price, id_category, id_distributor, stock) VALUES (?,?,?,?,?,?) RETURNING id_product";
     private static final String QUERY_GET_COUNT_PRODUCT = "SELECT count(*) FROM products p";
     private static final List<Product> products = new ArrayList<>();
     private static final ProductMapper mapper = new ProductMapper();
@@ -60,6 +61,29 @@ public class ProductRepository {
         } catch (SQLException e){
             throw new DatabaseException("Error on retrieving product by id: ",e);
         }
+    }
+
+    public static Product insertProduct(Connection con, Product product){
+        LOGGER.info("Invoking insertProduct");
+        try(final PreparedStatement ps = con.prepareStatement(QUERY_INSERT_PRODUCT)){
+            LOGGER.debug(DEBUG_QUERY, ps);
+            ps.setString(1, product.getName());
+            ps.setString(2, product.getBarcode());
+            ps.setDouble(3, product.getPrice());
+            ps.setInt(4, product.getIdCategory());
+            ps.setInt(5, product.getIdDistributor());
+            ps.setInt(6, product.getStock());
+            try(ResultSet rs = ps.executeQuery();) {
+                if (rs.next()) {
+                    product.setIdProduct(rs.getInt(1));
+                    return product;
+                }
+                return null;
+            }
+        } catch (SQLException e){
+            throw new DatabaseException("Error on inserting product: ",e);
+        }
+
     }
 
     private static int getCountProducts(Connection con){

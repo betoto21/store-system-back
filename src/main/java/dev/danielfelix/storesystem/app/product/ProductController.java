@@ -3,6 +3,7 @@ package dev.danielfelix.storesystem.app.product;
 import dev.danielfelix.storesystem.app.product.domain.models.Product;
 import dev.danielfelix.storesystem.app.product.usecase.GetProductByCodeBarUseCase;
 import dev.danielfelix.storesystem.app.product.usecase.GetProductsUseCase;
+import dev.danielfelix.storesystem.app.product.usecase.PostProductUseCase;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
 import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ProductController {
 
     private static final Logger LOGGER = LogManager.getLogger(ProductController.class);
+    private static final String RESPONSE = "Response: {}";
     List<Product> products = null;
 
     @GetMapping("/")
@@ -29,7 +31,7 @@ public class ProductController {
                     .sort(sort)
                     .build();
             products = GetProductsUseCase.dispatch(requestPage);
-            LOGGER.info("Response: {}", products);
+            LOGGER.info(RESPONSE, products);
             if (products.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -49,11 +51,29 @@ public class ProductController {
             if (productResponse == null) {
                 return ResponseEntity.noContent().build();
             }
-            LOGGER.info("Response: {}", productResponse);
+            LOGGER.info(RESPONSE, productResponse);
             return ResponseEntity.ok(productResponse);
         } catch (TechnicalErrorException e){
             LOGGER.error("Error on request getProductById: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/")
+    public ResponseEntity<Product> postProduct(@RequestBody Product product){
+        try{
+            LOGGER.info("procesing request postProduct");
+            if (product == null || product.getName().isEmpty() || product.getBarcode().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            Product productResponse = PostProductUseCase.dispatch(product);
+            LOGGER.info(RESPONSE, productResponse);
+            return ResponseEntity.ok(productResponse);
+        } catch (TechnicalErrorException e){
+            LOGGER.error("Error on request postProduct: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 }
