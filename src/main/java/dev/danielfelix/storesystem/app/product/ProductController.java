@@ -4,6 +4,7 @@ import dev.danielfelix.storesystem.app.product.domain.models.Product;
 import dev.danielfelix.storesystem.app.product.usecase.GetProductByCodeBarUseCase;
 import dev.danielfelix.storesystem.app.product.usecase.GetProductsUseCase;
 import dev.danielfelix.storesystem.app.product.usecase.PostProductUseCase;
+import dev.danielfelix.storesystem.app.product.usecase.PutProductUseCase;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
 import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
 import org.apache.logging.log4j.LogManager;
@@ -71,6 +72,22 @@ public class ProductController {
             return ResponseEntity.ok(productResponse);
         } catch (TechnicalErrorException e){
             LOGGER.error("Error on request postProduct: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<Product> putProduct(@RequestBody Product product){
+        try{
+            LOGGER.info("procesing request putProduct");
+            if (product == null || product.getName().isEmpty() || product.getBarcode().isEmpty() || product.getIdProduct() == 0) {
+                return ResponseEntity.badRequest().build();
+            }
+            Product productResponse = PutProductUseCase.dispatch(product);
+            LOGGER.info(RESPONSE, productResponse);
+            return ResponseEntity.ok(productResponse);
+        } catch (TechnicalErrorException e){
+            LOGGER.error("Error on request putProduct: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }
