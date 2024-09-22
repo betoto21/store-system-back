@@ -1,7 +1,7 @@
 package dev.danielfelix.storesystem.app.product;
 
 import dev.danielfelix.storesystem.app.product.domain.models.Product;
-import dev.danielfelix.storesystem.app.product.usecase.GetProductByIdUseCase;
+import dev.danielfelix.storesystem.app.product.usecase.GetProductByCodeBarUseCase;
 import dev.danielfelix.storesystem.app.product.usecase.GetProductsUseCase;
 import dev.danielfelix.storesystem.libraries.exceptions.TechnicalErrorException;
 import dev.danielfelix.storesystem.libraries.pagination.models.RequestPage;
@@ -41,16 +41,16 @@ public class ProductController {
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") int id){
+    @GetMapping("/codebar")
+    public ResponseEntity<Product> getProductById(@RequestBody Product product){
         try{
             LOGGER.info("procesing request getProductById");
-            Product product = GetProductByIdUseCase.dispatch(id);
-            if (product == null) {
+            Product productResponse = GetProductByCodeBarUseCase.dispatch(product.getBarcode());
+            if (productResponse == null) {
                 return ResponseEntity.noContent().build();
             }
-            LOGGER.info("Response: {}", product);
-            return ResponseEntity.ok(product);
+            LOGGER.info("Response: {}", productResponse);
+            return ResponseEntity.ok(productResponse);
         } catch (TechnicalErrorException e){
             LOGGER.error("Error on request getProductById: ", e);
             return ResponseEntity.internalServerError().build();

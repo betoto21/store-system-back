@@ -11,18 +11,18 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 
-public class GetProductByIdUseCase {
+public class GetProductByCodeBarUseCase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetProductByIdUseCase.class);
-    private GetProductByIdUseCase() {}
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetProductByCodeBarUseCase.class);
+    private GetProductByCodeBarUseCase() {}
 
-    public static Product dispatch(int id){
+    public static Product dispatch(String id){
         LOGGER.info("invoking dispatch");
         try {
             final Connection con = ConnectionsHolder.getConnection(
                     PostgreSQLConnection.ENVARPREFIX,
                     PostgreSQLConnection::getConnection);
-            return ProductRepository.getProductById(con, id);
+            return ProductRepository.getProductByBarCode(con, id);
         } catch (DatabaseException e){
             throw new TechnicalErrorException("Error on retrieving Products",e);
         }

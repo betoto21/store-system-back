@@ -18,7 +18,7 @@ public class ProductRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductRepository.class);
     private static final String QUERY_GET_ALL_PRODUCTS = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p  ORDER BY ? LIMIT 10 OFFSET ?";
-    private static final String QUERY_GET_PRODUCT_BY_ID = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p WHERE id_product = ?";
+    private static final String QUERY_GET_PRODUCT_BY_ID = "SELECT id_product, \"name\", barcode, price, id_category, id_distributor, stock FROM products p WHERE barcode = ?";
     private static final String QUERY_GET_COUNT_PRODUCT = "SELECT count(*) FROM products p";
     private static final List<Product> products = new ArrayList<>();
     private static final ProductMapper mapper = new ProductMapper();
@@ -46,11 +46,11 @@ public class ProductRepository {
         }
     }
 
-    public static Product getProductById(Connection con, int id){
+    public static Product getProductByBarCode(Connection con, String id){
         LOGGER.info("Invoking getProductById");
         try(final PreparedStatement ps = con.prepareStatement(QUERY_GET_PRODUCT_BY_ID)){
             LOGGER.debug(DEBUG_QUERY, ps);
-            ps.setInt(1, id);
+            ps.setString(1, id);
             try(ResultSet rs = ps.executeQuery();) {
                 if (rs.next()) {
                     return mapper.apply(rs, 1);
